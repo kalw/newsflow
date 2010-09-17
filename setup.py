@@ -8,6 +8,7 @@ setup(name='newsflow',
       packages=['newsflow'],
       scripts=[
         'scripts/newsflowd',
+        'scripts/newsflow-cron',
       ],
       dependency_links=[
         'http://github.com/synack/newsflow/downloads',

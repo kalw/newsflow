@@ -1,0 +1,39 @@
+#!/usr/bin/python
+from newsflow.config import conf
+import redis
+
+from time import time
+import os.path
+import gzip
+import sys
+import os
+
+def compress_old_nzbs(path):
+    now = time()
+    for filename in os.listdir(path):
+        if filename.endswith('.gz'):
+            continue
+        filename = '%s/%s' % (path, filename)
+
+        try:
+            st = os.stat(filename)
+            if now - 86400 < st.st_mtime:
+                continue
+        except:
+            continue
+
+        f = gzip.open(filename + '.gz', 'wb')
+        f.write(file(filename, 'rb').read())
+        f.close()
+        os.unlink(filename)
+
+def truncate_recent():
+    db = redis.Redis(conf('redis.server'))
+    prefix = conf('redis.keyprefix')
+    for group in conf('scraper.groups'):
+        db.zremrangebyscore('%s/%s/recent' % (prefix, group), 0, int(time()) - 86400)
+
+if __name__ == '__main__':
+    truncate_recent()
+    for group in conf('scraper.groups'):
+        compress_old_nzbs(os.path.join(conf('scraper.nzb_path'), group))
