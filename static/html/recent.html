@@ -8,6 +8,12 @@
 	<script type="text/javascript">
 $(document).ready(function() {
 	newsflow.get_groups();
+
+	if(document.location.hash != '') {
+		hash = document.location.hash;
+		$('#groups').val(hash.substr(1, hash.length));
+	}
+
 	newsflow.get_recent();
 	$('#groups').change(newsflow.get_recent);
 });

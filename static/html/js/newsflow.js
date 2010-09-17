@@ -18,6 +18,7 @@ newsflow.do_search = function(q) {
 
 newsflow.get_recent = function() {
     group = $('#groups').val();
+	document.location.hash = group;
 
     $.getJSON('/api/1/' + group + '/recent.json', function(data) {
         $('#content .nzb').remove();

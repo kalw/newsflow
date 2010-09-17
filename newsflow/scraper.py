@@ -60,6 +60,8 @@ class Scraper(NNTPConnection):
                 for count, postid in posts:
                     self.download_post(postid, tmpfile=tmpfile)
                 log.debug('Downloaded all parts, assembling and decoding')
+
+                failed = False
                 try:
                     outfile = self.nzbdir + filename
                     log.debug('yenc.decode("%s", "%s")' % (tmpfile, outfile))
@@ -69,15 +71,17 @@ class Scraper(NNTPConnection):
                     log.debug('Download successful, removing %s from the db' % filename)
                 except:
                     log.error(format_exc())
-                    continue
+                    log.error('Marking %s as a failure' % filename)
+                    failed = True
 
                 t = self.db.pipeline()
                 t.hdel(self.prefix + 'postcount', filename)
                 t.hdel(self.prefix + 'files', filename)
                 t.delete(self.prefix + 'posts/' + filename)
-                t.sadd(self.prefix + 'downloaded', filename)
                 t.execute()
-                self.index_file(filename)
+                if not failed:
+                    self.db.sadd(self.prefix + 'downloaded', filename)
+                    self.index_file(filename)
         return
 
     def get_subjects(self):
