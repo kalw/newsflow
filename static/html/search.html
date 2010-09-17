@@ -9,6 +9,13 @@
 $(document).ready(function() {
 	newsflow.get_groups();
 
+	$('#groups').change(function() {
+		query = $('#search').val();
+		if(query != '') {
+			newsflow.do_search(query);
+		}
+	});
+
 	$('#search').keypress(function(evt) {
 		if(evt.keyCode != 13) {
 			return;

@@ -6,8 +6,8 @@ import yenc
 
 from os import unlink, makedirs, stat
 from traceback import format_exc
-from os.path import basename
 from time import time
+import os.path
 import sys
 import re
 
@@ -133,14 +133,8 @@ class Scraper(NNTPConnection):
             if line == '.\r\n':
                 break
             if line.startswith('=ybegin'):
-                filename = line.split(' ', 5)[-1]
-                filename = filename.split('=', 1)
-                if len(filename) == 2:
-                    filename = filename[1]
-                else:
-                    filename = filename[0]
-                    log.warning('yenc Filename is mangled: %s' % repr(line))
-                filename = filename.rstrip('\r\n')
+                line = line.rstrip('\r\n')
+                filename = line[line.rfind('=') + 1:]
                 continue
             if (line.startswith('=yend') or line.startswith('=ypart')):
                 continue
@@ -154,11 +148,13 @@ class Scraper(NNTPConnection):
 
         ts = int(time())
         postid = self.db.incr(self.prefix + 'nextid')
+        nzbsize = stat(os.path.join(self.nzbdir, filename)).st_size,
+
         metadata = json.dumps({
             'ts': ts,
             'name': filename,
-            'size': stat(self.nzbdir + filename).st_size,
-        })
+            'size': nzbsize
+        }, ensure_ascii=False)
 
         t = self.db.pipeline()
         t.hset(self.prefix + 'metadata', postid, metadata)
