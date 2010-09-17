@@ -143,7 +143,7 @@ class Scraper(NNTPConnection):
         return tmpfile
 
     def index_file(self, filename):
-        indexname = filename.lower().replace('-', '.').replace('_', '.')
+        indexname = filename.lower().replace('-', '.').replace('_', '.').replace(' ', '.')
         keywords = indexname.split('.')[:-1]
 
         ts = int(time())
