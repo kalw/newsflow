@@ -21,6 +21,7 @@ newsflow.get_recent = function() {
 
     $.getJSON('/api/1/' + group + '/recent.json', function(data) {
         $('#content .nzb').remove();
+		$('#content .rss').html('<a href="/api/1/' + group + '/recent.rss"><img src="/img/icons/rss.png" alt="RSS" /></a>').show();
         for(i = 0; i < data.length; i++) {
             ts = new Date();
             ts.setTime(data[i].ts * 1000);
