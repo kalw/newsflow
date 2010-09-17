@@ -1,0 +1,33 @@
+Make sure you have redis installed and running on localhost:6379, then:
+
+System-wide install:
+# python setup.py install
+# mkdir -p /var/lib/newsflow /etc/newsflow
+# cp -r static /var/lib/newsflow/
+# cp newsflow.conf.example /etc/newsflow/newsflow.conf
+# vi /etc/newsflow/newsflow.conf (setup server info and groups)
+# newsflowd
+
+User install:
+$ virtualenv env
+$ source env/bin/activate
+$ python setup.py install
+$ mkdir ~/.newsflow
+$ cp newsflow.conf.example ~/.newsflow/newsflow.conf
+$ vi ~/.newsflow/newsflow.conf
+$ newsflowd
+
+Assuming you don't mess with the config too much, newsflow's search engine
+should now be running on port 9001. The scraper will start scraping at the
+"firstid" post given in newsflow.conf, or at the oldest available post if
+this option is omitted. WARNING: If you start at post 0, it may take
+days/weeks/months for the scraper to catch up with some of the higher traffic
+groups. When in doubt, pay attention to the debug log at startup, and choose
+a post ID close to the first large number on this line:
+
+2010-09-16 21:22:42 newsflow.nntp DEBUG < 211 103430970 1 103430970 alt.binaries.test
+
+As nzb files are downloaded and indexed, they will start to appear in the
+database. The easiest way to see what's available is to look at
+http://127.0.0.1:9001/recent in your web browser. This endpoint shows the
+latest 200 posts downloaded by your scraper.

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+	<title>{{ query }}</title>
+	<description>NZB search results for {{ query }}</description>
+	<link>{{ baseurl }}/api/1/{{ group }}/search.rss?q={{ query|quote_plus }}</link>
+	<pubDate>{{ now|rfc822 }}</pubDate>
+	<ttl>10</ttl>
+
+{% for item in results %}
+	<item>
+		<title>{{ item.name }}</title>
+		<description>{{ item.name }}</description>
+		<link>{{ baseurl }}/api/1/{{ group }}/nzb/{{ item.name }}</link>
+		<guid>{{ group }}:{{ item.name }}:{{ item.ts }}</guid>
+		<pubDate>{{ item.ts|rfc822 }}</pubDate>
+	</item>
+{% endfor %}
+</channel>
+</rss>
+

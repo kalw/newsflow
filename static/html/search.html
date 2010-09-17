@@ -1,0 +1,53 @@
+<html>
+<head>
+	<title>Search NZBs</title>
+	<link rel="stylesheet" type="text/css" href="/css/newsflow.css" />
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.easydate.min.js"></script>
+	<script type="text/javascript" src="/js/newsflow.js"></script>
+	<script type="text/javascript">
+$(document).ready(function() {
+	newsflow.get_groups();
+
+	$('#search').keypress(function(evt) {
+		if(evt.keyCode != 13) {
+			return;
+		}
+
+		newsflow.do_search(evt.target.value);
+		hash = evt.target.value;
+		while(hash.indexOf(' ') != -1) {
+			hash = hash.replace(' ', '+');
+		}
+		document.location.hash = hash;
+	});
+
+	hash = document.location.hash;
+	if(hash != '') {
+		hash = hash.substr(1, hash.length);
+		while(hash.indexOf('+') != -1) {
+			hash = hash.replace('+', ' ');
+		}
+		$('#search').val(hash);
+	}
+
+	q = $('#search').val();
+	if(q != '') {
+		newsflow.do_search(q);
+	}
+});
+	</script>
+</head>
+
+<body>
+
+<div id="container">
+<ul id="content">
+	<li class="header">Group: <select id="groups"></select></li>
+	<li class="header">Search: <input type="text" id="search" /></li>
+	<li class="rss"></li>
+</ul>
+</div>
+
+</body>
+</html>

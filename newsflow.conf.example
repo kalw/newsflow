@@ -1,0 +1,22 @@
+{
+	"scraper": {
+		"groups": ["alt.binaries.test"],
+		"server": "news.randomusenetprovider.com",
+		"username": "myusername",
+		"password": "mysupersecretpassword",
+		"tmp_path": "/var/lib/newsflow/tmp",
+		"nzb_path": "/var/lib/newsflow/nzb",
+		"firstid": "102943499",
+		"reconnect_timeout": 300
+	},
+	"redis": {
+		"keyprefix": "nf",
+		"server": "127.0.0.1"
+	},
+	"http": {
+		"static_path": "/var/lib/newsflow/static",
+		"bind_address": "0.0.0.0",
+		"bind_port": 9001,
+		"baseurl": "http://nzb.example.com:9001"
+	}
+}

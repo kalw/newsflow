@@ -1,0 +1,26 @@
+<html>
+<head>
+	<title>Search NZBs</title>
+	<link rel="stylesheet" type="text/css" href="/css/newsflow.css" />
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.easydate.min.js"></script>
+	<script type="text/javascript" src="/js/newsflow.js"></script>
+	<script type="text/javascript">
+$(document).ready(function() {
+	newsflow.get_groups();
+	newsflow.get_recent();
+	$('#groups').change(newsflow.get_recent);
+});
+	</script>
+</head>
+
+<body>
+
+<div id="container">
+<ul id="content">
+	<li class="header"><select id="groups"></select></li>
+</ul>
+</div>
+
+</body>
+</html>

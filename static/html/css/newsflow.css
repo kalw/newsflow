@@ -1,0 +1,55 @@
+body {
+	margin: 0;
+	padding: 0;
+	font-family: "Andale Mono", sans-serif;
+	font-size: 10pt;
+	background-color: #336;
+}
+
+#container {
+	width: 65%;
+	margin: 0 auto;
+	background-color: #FFF;
+}
+
+#content {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+#content li {
+	padding: 10px;
+	border-bottom: 1px solid #DDD;
+}
+
+#content .pattern:hover, .nzb:hover {
+	background-color: #DDD;
+}
+
+.easydate {
+	float: right;
+}
+
+.header {
+	background-color: #006;
+	color: #FFF;
+}
+
+li.rss {
+	display: none;
+	text-align: right;
+}
+
+.delete {
+	float: right;
+	cursor: pointer;
+}
+
+.header input {
+	border: 1px solid #DDD;
+	font-size: 14pt;
+	font-family: "Andale Mono", sans-serif;
+	margin: 0;
+	width: 100%;
+}
