@@ -54,7 +54,10 @@ def search_files(group, fmt):
     if keywords:
         db.zinterstore(tmpkey, keywords, 'MAX')
         matches = db.zrange(tmpkey, 0, 500, desc=True)
-        results = [json.loads(x) for x in db.hmget(prefix + '/%s/metadata' % group, matches) if x]
+        if matches:
+            results = [json.loads(x) for x in db.hmget(prefix + '/%s/metadata' % group, matches) if x]
+        else:
+            results = []
         db.delete(tmpkey)
     else:
         results = []
