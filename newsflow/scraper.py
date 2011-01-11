@@ -67,6 +67,7 @@ class Scraper(NNTPConnection):
                     log.debug('yenc.decode("%s", "%s")' % (tmpfile, outfile))
                     yenc.decode(tmpfile, outfile)
                     unlink(tmpfile)
+                    self.clean_trailing_xml(outfile)
 
                     log.debug('Download successful, removing %s from the db' % filename)
                 except:
@@ -81,8 +82,23 @@ class Scraper(NNTPConnection):
                 t.execute()
                 if not failed:
                     self.db.sadd(self.prefix + 'downloaded', filename)
-                    self.index_file(filename)
+                    try:
+                        self.index_file(filename)
+                    except:
+                        log.error('Indexing failed for %s: %s' % (filename, format_exc()))
         return
+
+    def clean_trailing_xml(self, filename):
+        data = file(filename, 'rb').read()
+        count = 0
+        newfile = file(filename, 'wb')
+        for line in data.split('\n'):
+            if line.startswith('<?xml'):
+                count += 1
+            if count > 1:
+                break
+            newfile.write(line + '\n')
+        newfile.close()
 
     def get_subjects(self):
         lastid = self.db.get(self.prefix + 'lastid')
@@ -143,8 +159,11 @@ class Scraper(NNTPConnection):
         return tmpfile
 
     def index_file(self, filename):
-        indexname = filename.lower().replace('-', '.').replace('_', '.').replace(' ', '.')
-        keywords = indexname.split('.')[:-1]
+        replace = '._-&'
+        indexname = filename.lower()
+        for c in replace:
+            indexname = indexname.replace(c, ' ')
+        keywords = [x for x in indexname.split(' ')[:-1] if x]
 
         ts = int(time())
         postid = self.db.incr(self.prefix + 'nextid')
@@ -152,7 +171,7 @@ class Scraper(NNTPConnection):
 
         metadata = json.dumps({
             'ts': ts,
-            'name': filename,
+            'name': filename.decode('utf-8', 'backslashreplace'),
             'size': nzbsize
         }, ensure_ascii=False)
 
