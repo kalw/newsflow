@@ -4,11 +4,14 @@ ez_setup.use_setuptools()
 from setuptools import setup
 
 setup(name='newsflow',
-      version='1.0',
+      version='1.1',
       packages=['newsflow'],
       scripts=[
-        'scripts/newsflowd',
+        'scripts/newsflow-www',
         'scripts/newsflow-cron',
+        'scripts/newsflow-producer-scraper',
+        'scripts/newsflow-consumer-download',
+        'scripts/newsflow-consumer-index',
       ],
       dependency_links=[
         'http://github.com/synack/newsflow/downloads',

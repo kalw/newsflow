@@ -34,7 +34,11 @@ class NNTPConnection(object):
         log.debug('> %s' % message)
         self.sock.sendall('%s\r\n' % message)
 
+    def handle(self, line):
+        pass
+
     def run(self):
+        self.connect()
         while True:
             line = self.readline()
             if line is None:
@@ -43,12 +47,4 @@ class NNTPConnection(object):
                 self.connect()
                 continue
             log.debug('< %s' % line)
-            try:
-                code, message = line.split(' ', 1)
-            except:
-                log.warning('Unparsable response: %s' % line)
-                continue
-            code = int(code)
-            if hasattr(self, 'handle_%i' % code):
-                method = getattr(self, 'handle_%i' % code)
-                method(message)
+            self.handle(line)

@@ -14,8 +14,7 @@ import redis
 
 bottle.debug(True)
 
-db = redis.Redis()
-prefix = conf('redis.keyprefix')
+db = redis.Redis(conf('redis.server'), db=conf('redis.db'))
 templates = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(conf('http.static_path'), 'templates/')))
 
 def rfc822(ts):
@@ -25,7 +24,7 @@ templates.filters['quote_plus'] = quote_plus
 
 @bottle.get('/api/1/:group/recent.:fmt#(json|rss)#')
 def recent_files(group, fmt):
-    results = db.zrange(prefix + '/%s/recent' % group, 0, 100, desc=True)
+    results = db.zrange('%s/recent' % group, 0, 100, desc=True)
     results = [json.loads(x) for x in results]
 
     if fmt == 'rss':
@@ -42,7 +41,7 @@ def search_files(group, fmt):
     q = bottle.request.params['q']
     query = q.replace('-', ' ').replace('_', ' ')
     keywords = query.split(' ')
-    keywords = [prefix + '/%s/zindex/%s' % (group, x) for x in keywords if x]
+    keywords = ['%s/zindex/%s' % (group, x) for x in keywords if x]
     for k in keywords:
         t.exists(k)
     for i, exists in enumerate(t.execute()):
@@ -50,12 +49,12 @@ def search_files(group, fmt):
             keywords.remove(keywords[i])
 
     t.reset()
-    tmpkey = prefix + '/zinter-%.02f+%i' % (time(), randint(1, 9999))
+    tmpkey = 'zinter-%.02f+%i' % (time(), randint(1, 9999))
     if keywords:
         db.zinterstore(tmpkey, keywords, 'MAX')
         matches = db.zrange(tmpkey, 0, 500, desc=True)
         if matches:
-            results = [json.loads(x) for x in db.hmget(prefix + '/%s/metadata' % group, matches) if x]
+            results = [json.loads(x) for x in db.hmget('%s/metadata' % group, matches) if x]
         else:
             results = []
         db.delete(tmpkey)

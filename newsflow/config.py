@@ -45,8 +45,5 @@ def conf(key):
     log.debug('conf(%s) = %r' % (key, obj))
     return obj
 
-def dbkey(group, key):
-    return '%s%s/%s' % (conf('redis.keyprefix'), group, key)
-
 load_config()
 log = logger('newsflow.config')

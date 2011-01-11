@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+from newsflow.config import conf, logger
+from newsflow.scraper import Scraper
+from redis import Redis
+
+from wsgiref.simple_server import make_server, WSGIRequestHandler
+from threading import Thread
+from time import sleep
+
+def main():
+    log = logger('newsflow.main')
+
+    db = Redis(conf('redis.server'), db=conf('redis.db'))
+    log.info('Starting newsflow scraper')
+
+    threads = []
+
+    for group in conf('scraper.groups'):
+        nzb = Scraper(conf('scraper.server'), username=conf('scraper.username'), password=conf('scraper.password'), group=group, database=db)
+
+        t = Thread(target=nzb.run)
+        t.setDaemon(True)
+        t.start()
+        log.debug('Created scraper thread for %s' % group)
+        threads.append(t)
+
+    while True:
+        sleep(300)
+
+if __name__ == '__main__':
+    main()

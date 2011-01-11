@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from newsflow.config import conf, logger
 from newsflow.search import application
-from newsflow.scraper import Scraper
 from redis import Redis
 
 from wsgiref.simple_server import make_server, WSGIRequestHandler
@@ -23,20 +22,7 @@ def run_wsgi():
 def main():
     log = logger('newsflow.main')
 
-    db = Redis(conf('redis.server'))
-    log.info('Starting newsflow scraper')
-
-    threads = []
-
-    for group in conf('scraper.groups'):
-        nzb = Scraper(conf('scraper.server'), username=conf('scraper.username'), password=conf('scraper.password'), group=group, database=db)
-
-        t = Thread(target=nzb.run)
-        t.setDaemon(True)
-        t.start()
-        log.debug('Created scraper thread for %s' % group)
-        threads.append(t)
-
+    log.info('Starting newsflow webserver')
     run_wsgi()
 
 if __name__ == '__main__':
