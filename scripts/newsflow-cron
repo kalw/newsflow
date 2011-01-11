@@ -29,9 +29,8 @@ def compress_old_nzbs(path):
 
 def truncate_recent():
     db = redis.Redis(conf('redis.server'))
-    prefix = conf('redis.keyprefix')
     for group in conf('scraper.groups'):
-        db.zremrangebyscore('%s/%s/recent' % (prefix, group), 0, int(time()) - 86400)
+        db.zremrangebyscore('%s/recent' % group, 0, int(time()) - 86400)
 
 if __name__ == '__main__':
     truncate_recent()

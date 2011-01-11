@@ -156,19 +156,32 @@ class IndexConsumer(Consumer):
         group, filename = msg.split('/', 1)
 
         indexname = filename.lower()
+        if indexname.endswith('.gz'):
+            indexname = indexname.rsplit('.', 1)[0]
+        if indexname.endswith('.nzb'):
+            indexname = indexname.rsplit('.', 1)[0]
 
         replace = '._-&'
         for c in replace:
             indexname = indexname.replace(c, ' ')
-        keywords = [x for x in indexname.split(' ')[:-1] if x]
+        keywords = [x for x in indexname.split(' ') if x]
 
         nzbdir = self.get_nzbdir(group)
         st = stat(os.path.join(nzbdir, filename))
         ts = st.st_mtime
 
+        if filename.endswith('.gz'):
+            filename = filename.rsplit('.', 1)[0]
+
+        try:
+            name = filename.decode('utf-8', 'backslashreplace')
+        except TypeError:
+            log.warning('Unicode bullshit for file %s' % filename)
+            return
+
         metadata = json.dumps({
             'ts': ts,
-            'name': filename.decode('utf-8', 'backslashreplace'),
+            'name': name,
             'size': st.st_size,
         }, ensure_ascii=False)
 
