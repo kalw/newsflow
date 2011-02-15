@@ -28,7 +28,7 @@ def compress_old_nzbs(path):
         os.unlink(filename)
 
 def truncate_recent():
-    db = redis.Redis(conf('redis.server'))
+    db = redis.Redis(conf('redis.server'), db=conf('redis.db'))
     for group in conf('scraper.groups'):
         db.zremrangebyscore('%s/recent' % group, 0, int(time()) - 86400)
 
