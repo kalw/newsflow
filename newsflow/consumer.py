@@ -97,8 +97,13 @@ class DownloadConsumer(Consumer):
         for postid in have_posts:
             self.download_post(postid, tmpfile)
 
+        outfile = nzbdir + filename
+        if os.path.exists(outfile):
+            log.error('Throwing away file %s, already decoded' % filename)
+            unlink(tmpfile)
+            return
+
         try:
-            outfile = nzbdir + filename
             log.debug('yenc.decode("%s", "%s")' % (tmpfile, outfile))
             yenc.decode(tmpfile, outfile)
         except:
@@ -168,7 +173,7 @@ class IndexConsumer(Consumer):
 
         nzbdir = self.get_nzbdir(group)
         st = stat(os.path.join(nzbdir, filename))
-        ts = st.st_mtime
+        ts = int(st.st_mtime)
 
         if filename.endswith('.gz'):
             filename = filename.rsplit('.', 1)[0]
@@ -184,6 +189,11 @@ class IndexConsumer(Consumer):
             'name': name,
             'size': st.st_size,
         }, ensure_ascii=False)
+
+        existing = self.db.zrangebyscore(group + '/recent', ts, ts)
+        if metadata in existing:
+            log.info('File already indexed: %s' % name)
+            return
 
         id = self.db.incr('nextid')
         t = self.db.pipeline()
