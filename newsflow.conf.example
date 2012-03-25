@@ -11,7 +11,8 @@
 	},
 	"redis": {
 		"keyprefix": "nf",
-		"server": "127.0.0.1"
+		"server": "127.0.0.1",
+		"db": "dbname"
 	},
 	"http": {
 		"static_path": "/var/lib/newsflow/static",
